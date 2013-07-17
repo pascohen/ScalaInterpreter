@@ -11,8 +11,12 @@ class Evaluator(val urls: Array[URL], val stream: java.io.PrintStream) {
 
   def this() = this(Array[URL](), System.out)
 
-  val logFile = new java.io.File("/tmp/scalaeval.out")
-  val logWriter = new java.io.PrintWriter(logFile, "UTF-8")
+  
+  val logWriter = {
+    val logFile = new java.io.File("/tmp/scalaeval.out")
+    new java.io.PrintWriter(logFile, "UTF-8")
+  }
+ 
   val evalPrinter = new java.io.PrintWriter(stream)
 
   private def prepareEval(stream: java.io.PrintStream) = {
@@ -28,8 +32,9 @@ class Evaluator(val urls: Array[URL], val stream: java.io.PrintStream) {
     //env.bootclasspath.append("/usr/home/pcohen/Dev/workspace/Gr8ConfUS/target/classes")
 
     //env.pluginOptions.appendToValue("continuations:enable")
-    //env.pluginsDir.value="/usr/home/pcohen/Dev/workspace/Gr8ConfUS/lib"
-
+    env.pluginsDir.value="/usr/home/pcohen/Dev/workspace/Gr8ConfUS/lib"
+    //env.plugin.appendToValue("scalacompilerplugin-1.0")
+      
     env.usejavacp.value = true
     env
   }
