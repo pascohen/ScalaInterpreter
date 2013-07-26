@@ -3,88 +3,81 @@ package dslprez.scala.eval
 import java.net.URL
 import scala.tools.nsc._
 
-class Evaluator(val urls: Array[URL], val stream: java.io.PrintStream) {
+class Evaluator(stream: java.io.PrintStream) {
 
-  def this(urls: Array[URL]) = this(urls, System.out)
+  private[this] val oldOut = System.out
+  private[this] val oldErr = System.err
 
-  def this(stream: java.io.PrintStream) = this(Array[URL](), stream)
+  def this() = this(System.out)
 
-  def this() = this(Array[URL](), System.out)
-
-  
   val logWriter = {
     val logFile = new java.io.File("/tmp/scalaeval.out")
     new java.io.PrintWriter(logFile, "UTF-8")
   }
- 
-  val evalPrinter = new java.io.PrintWriter(stream)
 
-  private def prepareEval(stream: java.io.PrintStream) = {
+  val settings = new Settings()
+  settings.usejavacp.value = true
+
+  lazy val interpreter = createInterpreter
+
+  def withUrls(urls: Array[URL]) = {
+       logWriter.println("Adding urls " + urls)
+    urls foreach { url => settings.bootclasspath.append(url.toString) }
+    this
+  }
+
+  def withContinuations = {
+       logWriter.println("Activating continuations")
+    settings.pluginOptions.appendToValue("continuations:enable")
+    this
+  }
+
+  def withPluginsDir(dir: String) = {
+    logWriter.println("Adding " + dir)
+    settings.pluginsDir.value = dir
+    this
+  }
+
+  def addPlugins(plugins: Array[String]) = {
+    logWriter.println("Adding plugins " + plugins)
+    plugins foreach { plugin => settings.plugin.appendToValue(plugin) }
+    this
+  }
+
+  private[this] def createInterpreter = {
     System.setOut(stream)
     System.setErr(stream)
 
     Console.setOut(stream)
     Console.setErr(stream)
-
-    val env = new Settings()
-
-    urls foreach { url => env.bootclasspath.append(url.toString) }
-    //env.bootclasspath.append("/usr/home/pcohen/Dev/workspace/Gr8ConfUS/target/classes")
-
-    //env.pluginOptions.appendToValue("continuations:enable")
-    env.pluginsDir.value="/usr/home/pcohen/Dev/workspace/Gr8ConfUS/lib"
-    //env.plugin.appendToValue("scalacompilerplugin-1.0")
-      
-    env.usejavacp.value = true
-    env
+    logWriter.println("createInterpreter")
+    new scala.tools.nsc.interpreter.IMain(settings)
   }
-  
+
+  def close = {
+    interpreter.close()
+    logWriter.close()
+    System.setOut(oldOut)
+    System.setErr(oldErr)
+
+  }
   def eval(s: String) = {
-
-    val oldOut = System.out
-    val oldErr = System.err
-    var r = new Object()
-
     try {
-      val env = prepareEval(stream)
-      val n = new scala.tools.nsc.interpreter.IMain(env, evalPrinter)
-
-      r = n.eval(s)
-
-      n.close()
-      r
+      interpreter.eval(s)
     } catch {
       case t: Throwable =>
         t.printStackTrace(logWriter)
-        r
-    } finally {
-      logWriter.close()
-      System.setOut(oldOut)
-      System.setErr(oldErr)
+        ""
     }
   }
 
   def interpret(s: String) = {
-    val oldOut = System.out
-    val oldErr = System.err
-    var r = new Object()
-
     try {
-      val env = prepareEval(stream)
-      val n = new scala.tools.nsc.interpreter.IMain(env, evalPrinter)
-
-      r = n.interpret(s)
-
-      n.close()
-      r
+      interpreter.interpret(s)
     } catch {
       case t: Throwable =>
         t.printStackTrace(logWriter)
-        r
-    } finally {
-      logWriter.close()
-      System.setOut(oldOut)
-      System.setErr(oldErr)
+        ""
     }
   }
 }
