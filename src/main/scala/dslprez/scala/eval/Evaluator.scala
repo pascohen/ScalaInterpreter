@@ -21,15 +21,19 @@ class Evaluator(stream: java.io.PrintStream) {
   lazy val interpreter = createInterpreter
 
   def withUrls(urls: Array[URL]) = {
-       logWriter.println("Adding urls " + urls)
+    logWriter.println("Adding urls " + urls)
     urls foreach { url => settings.bootclasspath.append(url.toString) }
     this
   }
 
-  def withContinuations = {
-       logWriter.println("Activating continuations")
-    settings.pluginOptions.appendToValue("continuations:enable")
+  def withPluginOption(s: String) = {
+    logWriter.println("Setting pluginOption " + s)
+    settings.pluginOptions.appendToValue(s)
     this
+  }
+
+  def withContinuations = {
+    withPluginOption("continuations:enable")
   }
 
   def withPluginsDir(dir: String) = {
