@@ -72,7 +72,7 @@ class Evaluator(stream: java.io.PrintStream) {
 
   def addImport(s:String):Unit = addImport(List(s))
   
-  def addImport(l:List[String]) = l foreach { i => interpret("import "+i)}
+  def addImport(l:List[String]) = l foreach { i => eval("import "+i)}
   
   def eval(s: String) = {
     try {
