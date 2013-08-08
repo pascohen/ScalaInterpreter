@@ -63,8 +63,17 @@ class Evaluator(stream: java.io.PrintStream) {
     logWriter.close()
     System.setOut(oldOut)
     System.setErr(oldErr)
-
   }
+  
+
+  def bind(s:String, t:String, o:Object) {
+    interpreter.bind(s,t,o)
+  }
+
+  def addImport(s:String):Unit = addImport(List(s))
+  
+  def addImport(l:List[String]) = l foreach { i => interpret("import "+i)}
+  
   def eval(s: String) = {
     try {
       interpreter.eval(s)
