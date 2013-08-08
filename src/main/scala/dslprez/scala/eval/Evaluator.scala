@@ -80,7 +80,7 @@ class Evaluator(stream: java.io.PrintStream) {
     } catch {
       case t: Throwable =>
         t.printStackTrace(logWriter)
-        ""
+        t 
     }
   }
 
@@ -90,7 +90,7 @@ class Evaluator(stream: java.io.PrintStream) {
     } catch {
       case t: Throwable =>
         t.printStackTrace(logWriter)
-        ""
+        t
     }
   }
 }
