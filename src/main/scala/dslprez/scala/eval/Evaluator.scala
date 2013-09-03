@@ -10,24 +10,25 @@ class Evaluator(stream: java.io.PrintStream) {
 
   def this() = this(System.out)
 
-  val logWriter = {
+  /* val logWriter = {
     val logFile = new java.io.File("/tmp/scalaeval.out")
     new java.io.PrintWriter(logFile, "UTF-8")
-  }
+  }*/
 
   val settings = new Settings()
   settings.usejavacp.value = true
+  //settings.nobootcp.value=true
 
   lazy val interpreter = createInterpreter
 
   def withUrls(urls: Array[URL]) = {
-    logWriter.println("Adding urls " + urls)
+    //logWriter.println("Adding urls " + urls)
     urls foreach { url => settings.bootclasspath.append(url.toString) }
     this
   }
 
   def withPluginOption(s: String) = {
-    logWriter.println("Setting pluginOption " + s)
+    //logWriter.println("Setting pluginOption " + s)
     settings.pluginOptions.appendToValue(s)
     this
   }
@@ -37,13 +38,13 @@ class Evaluator(stream: java.io.PrintStream) {
   }
 
   def withPluginsDir(dir: String) = {
-    logWriter.println("Adding " + dir)
+    //logWriter.println("Adding " + dir)
     settings.pluginsDir.value = dir
     this
   }
 
   def addPlugins(plugins: Array[String]) = {
-    logWriter.println("Adding plugins " + plugins)
+    //logWriter.println("Adding plugins " + plugins)
     plugins foreach { plugin => settings.plugin.appendToValue(plugin) }
     this
   }
@@ -54,13 +55,13 @@ class Evaluator(stream: java.io.PrintStream) {
 
     Console.setOut(stream)
     Console.setErr(stream)
-    logWriter.println("createInterpreter")
+    //logWriter.println("createInterpreter")
     new scala.tools.nsc.interpreter.IMain(settings)
   }
 
   def close = {
     interpreter.close()
-    logWriter.close()
+    //logWriter.close()
     System.setOut(oldOut)
     System.setErr(oldErr)
   }
@@ -75,22 +76,22 @@ class Evaluator(stream: java.io.PrintStream) {
   def addImport(l:List[String]) = l foreach { i => eval("import "+i)}
   
   def eval(s: String) = {
-    try {
+    //try {
       interpreter.eval(s)
-    } catch {
-      case t: Throwable =>
-        t.printStackTrace(logWriter)
-        throw t 
-    }
+    //} catch {
+    //  case t: Throwable =>
+        //t.printStackTrace(logWriter)
+      //  throw t 
+    //}
   }
 
   def interpret(s: String) = {
-    try {
+    //try {
       interpreter.interpret(s)
-    } catch {
-      case t: Throwable =>
-        t.printStackTrace(logWriter)
-        throw t
-    }
+    //} catch {
+    //  case t: Throwable =>
+        //t.printStackTrace(logWriter)
+    //    throw t
+    //}
   }
 }
