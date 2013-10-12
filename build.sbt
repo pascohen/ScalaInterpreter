@@ -2,10 +2,12 @@ name := "scalaInterpreter"
 
 version := "1.0"
 
-scalaVersion := "2.11.0-M5"
+resolvers += Resolver.sonatypeRepo("snapshots")
+
+scalaVersion := "2.11.0-SNAPSHOT"
 
 scalacOptions += "-deprecation"
 
 scalacOptions += "-feature"
 
-libraryDependencies += "org.scala-lang"%"scala-compiler"%"2.11.0-M5"
+libraryDependencies += "org.scala-lang"%"scala-compiler"%"2.11.0-SNAPSHOT"
